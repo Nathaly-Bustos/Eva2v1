@@ -8,237 +8,313 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Material Icons -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- FullCalendar -->
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet">
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <!-- Estilos personalizados -->
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <!-- Verificación de sesión -->
-  <script>
-    if (!localStorage.getItem('usuarioActual')) {
-      window.location.href = 'index.html';
-    }
-  </script>
 
-  <!-- Barra superior -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">
-        <i class="material-icons me-2">pregnant_woman</i>MatronaPlus
-      </a>
-      <div class="d-flex align-items-center">
-        <span class="text-white me-3">
-          <i class="material-icons me-1">account_circle</i>
-          <span id="nombre-usuario">Usuario</span>
-        </span>
-        <button id="btn-cerrar-sesion" class="btn btn-outline-light">
-          <i class="material-icons">logout</i>
-        </button>
+<script>
+  if (!localStorage.getItem('usuarioActual')) {
+    window.location.href = 'index.html';
+  }
+</script>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">
+      <i class="material-icons me-2">pregnant_woman</i>MatronaPlus
+    </a>
+    <div class="d-flex align-items-center">
+      <span class="text-white me-3">
+        <i class="material-icons me-1">account_circle</i>
+        <span id="nombre-usuario">Usuario</span>
+      </span>
+      <button id="btn-cerrar-sesion" class="btn btn-outline-light">
+        <i class="material-icons">logout</i>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-lg-2 p-0 bg-light sidebar">
+      <div class="list-group list-group-flush">
+        <a href="#tab-dashboard" class="list-group-item list-group-item-action active" data-bs-toggle="tab">
+          <i class="material-icons me-2">dashboard</i> Inicio
+        </a>
+        <a href="#tab-pacientes" class="list-group-item list-group-item-action" data-bs-toggle="tab">
+          <i class="material-icons me-2">people</i> Pacientes
+        </a>
+        <a href="#tab-turnos" class="list-group-item list-group-item-action" data-bs-toggle="tab">
+          <i class="material-icons me-2">event</i> Turnos
+        </a>
+        <a href="#tab-controles" class="list-group-item list-group-item-action" data-bs-toggle="tab">
+          <i class="material-icons me-2">pending_actions</i> Controles
+        </a>
+        <a href="#tab-recetas" class="list-group-item list-group-item-action" data-bs-toggle="tab">
+          <i class="material-icons me-2">medical_services</i> Recetas
+        </a>
+        <a href="#tab-calculadora" class="list-group-item list-group-item-action" data-bs-toggle="tab">
+          <i class="material-icons me-2">calculate</i> Calculadora
+        </a>
       </div>
     </div>
-  </nav>
-
-  <!-- Contenido principal -->
-  <div class="container-fluid">
-    <div class="row">
-      <!-- Sidebar -->
-      <div class="col-lg-2 p-0 bg-light sidebar">
-        <div class="list-group list-group-flush">
-          <a href="#tab-dashboard" class="list-group-item list-group-item-action active" data-bs-toggle="tab">
-            <i class="material-icons me-2">dashboard</i> Inicio
-          </a>
-          <a href="#tab-pacientes" class="list-group-item list-group-item-action" data-bs-toggle="tab">
-            <i class="material-icons me-2">people</i> Pacientes
-          </a>
-          <a href="#tab-turnos" class="list-group-item list-group-item-action" data-bs-toggle="tab">
-            <i class="material-icons me-2">event</i> Turnos
-          </a>
-          <a href="#tab-calculadora" class="list-group-item list-group-item-action" data-bs-toggle="tab">
-            <i class="material-icons me-2">calculate</i> Calculadora
-          </a>
-        </div>
-      </div>
-
-      <!-- Contenido dinámico -->
-      <div class="col-lg-10 py-4">
-        <div class="tab-content">
-          <!-- Dashboard -->
-          <div class="tab-pane fade show active" id="tab-dashboard">
-            <div class="row">
-              <div class="col-md-4">
-                <div class="card shadow-sm mb-4">
-                  <div class="card-body text-center">
-                    <i class="material-icons md-48 text-primary">people</i>
-                    <h3 id="total-pacientes">0</h3>
-                    <p class="text-muted">Pacientes Registrados</p>
-                  </div>
+    <div class="col-lg-10 py-4">
+      <div class="tab-content">
+        <!-- Dashboard -->
+        <div class="tab-pane fade show active" id="tab-dashboard">
+          <div class="row">
+            <div class="col-md-3">
+              <div class="card shadow-sm mb-4 text-center">
+                <div class="card-body">
+                  <i class="material-icons md-48 text-primary">people</i>
+                  <h3 id="total-pacientes">0</h3>
+                  <p class="text-muted">Pacientes Registrados</p>
                 </div>
               </div>
-              <div class="col-md-4">
-                <div class="card shadow-sm mb-4">
-                  <div class="card-body text-center">
-                    <i class="material-icons md-48 text-success">event_available</i>
-                    <h3 id="turnos-hoy">0</h3>
-                    <p class="text-muted">Turnos Hoy</p>
-                  </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card shadow-sm mb-4 text-center">
+                <div class="card-body">
+                  <i class="material-icons md-48 text-success">event_available</i>
+                  <h3 id="turnos-hoy">0</h3>
+                  <p class="text-muted">Turnos Hoy</p>
                 </div>
               </div>
-              <div class="col-md-4">
-                <div class="card shadow-sm mb-4">
-                  <div class="card-body text-center">
-                    <i class="material-icons md-48 text-warning">pending_actions</i>
-                    <h3 id="turnos-pendientes">0</h3>
-                    <p class="text-muted">Controles Pendientes</p>
-                  </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card shadow-sm mb-4 text-center">
+                <div class="card-body">
+                  <i class="material-icons md-48 text-warning">pending_actions</i>
+                  <h3 id="controles-pendientes">0</h3>
+                  <p class="text-muted">Controles Pendientes</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card shadow-sm mb-4 text-center">
+                <div class="card-body">
+                  <i class="material-icons md-48 text-danger">description</i>
+                  <h3 id="recetas-emitidas">0</h3>
+                  <p class="text-muted">Recetas Emitidas</p>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Gestión de Pacientes -->
-          <div class="tab-pane fade" id="tab-pacientes">
-            <div class="card shadow-sm mb-4">
-              <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0"><i class="material-icons me-2">people</i> Gestión de Pacientes</h5>
-                <button class="btn btn-light btn-sm" id="btn-nuevo-paciente">
-                  <i class="material-icons me-1">add</i> Nuevo
+          <div class="card shadow-sm mb-4">
+            <div class="card-body">
+              <canvas id="grafico-dashboard" style="height:300px;"></canvas>
+            </div>
+          </div>
+        </div>
+        <!-- Pacientes -->
+        <div class="tab-pane fade" id="tab-pacientes">
+          <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+              <h5 class="mb-0"><i class="material-icons me-2">people</i> Gestión de Pacientes</h5>
+              <button class="btn btn-light btn-sm" id="btn-nuevo-paciente">
+                <i class="material-icons me-1">add</i> Nuevo
+              </button>
+            </div>
+            <div class="card-body">
+              <form id="form-paciente" class="row g-3 mb-4 d-none">
+                <div class="col-md-6">
+                  <label class="form-label">RUT</label>
+                  <input type="text" class="form-control" id="rut-paciente" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Nombre Completo</label>
+                  <input type="text" class="form-control" id="nombre-paciente" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Fecha Nacimiento</label>
+                  <input type="date" class="form-control" id="fecha-nacimiento">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Teléfono</label>
+                  <input type="tel" class="form-control" id="telefono-paciente">
+                </div>
+                <div class="col-12">
+                  <button type="submit" class="btn btn-primary me-2">
+                    <i class="material-icons me-1">save</i> Guardar
+                  </button>
+                  <button type="button" class="btn btn-outline-secondary" id="btn-cancelar-paciente">
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>RUT</th>
+                      <th>Nombre</th>
+                      <th>Edad</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="lista-pacientes">
+                    <!-- Datos dinámicos -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Turnos en Calendario -->
+        <div class="tab-pane fade" id="tab-turnos">
+          <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+              <h5 class="mb-0"><i class="material-icons me-2">event</i> Turnos - Calendario</h5>
+            </div>
+            <div class="card-body">
+              <div id="calendario-turnos"></div>
+            </div>
+          </div>
+        </div>
+
+      <!-- Controles Pendientes -->
+<div class="tab-pane fade" id="tab-controles">
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+      <h5 class="mb-0"><i class="material-icons me-2">pending_actions</i> Controles Pendientes</h5>
+      <button class="btn btn-light btn-sm" id="btn-nuevo-control">
+        <i class="material-icons me-1">add</i> Nuevo Control
+      </button>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Paciente</th>
+              <th>Tipo</th>
+              <th>Fecha y Hora</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="lista-controles">
+            <!-- Datos dinámicos -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+        <!-- Recetas Médicas -->
+        <div class="tab-pane fade" id="tab-recetas">
+          <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+              <h5 class="mb-0"><i class="material-icons me-2">medical_services</i> Recetas Médicas</h5>
+            </div>
+            <div class="card-body">
+              <form id="form-receta" class="row g-3 mb-4">
+                <div class="col-md-6">
+                  <label class="form-label">Paciente</label>
+                  <input type="text" class="form-control" id="nombre-receta" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Medicamento</label>
+                  <input type="text" class="form-control" id="medicamento-receta" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Dosis</label>
+                  <input type="text" class="form-control" id="dosis-receta" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Indicaciones</label>
+                  <input type="text" class="form-control" id="indicaciones-receta" required>
+                </div>
+                <div class="col-12">
+                  <button type="submit" class="btn btn-primary w-100">
+                    <i class="material-icons me-1">send</i> Generar Receta
+                  </button>
+                </div>
+              </form>
+              <div id="vista-receta" class="border p-3 rounded d-none bg-light">
+                <!-- Receta generada -->
+              </div>
+              <div id="acciones-receta" class="mt-3 d-none">
+                <button id="btn-descargar-receta" class="btn btn-success w-100">
+                  <i class="material-icons me-1">download</i> Descargar PDF
                 </button>
               </div>
-              <div class="card-body">
-                <!-- Formulario (oculto inicialmente) -->
-                <form id="form-paciente" class="row g-3 mb-4 d-none">
+            </div>
+          </div>
+        </div>
+        <!-- Calculadora -->
+        <div class="tab-pane fade" id="tab-calculadora">
+          <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+              <h5 class="mb-0"><i class="material-icons me-2">calculate</i> Calculadora de Gestación</h5>
+            </div>
+            <div class="card-body">
+              <form id="form-calculadora">
+                <div class="row g-3">
                   <div class="col-md-6">
-                    <label class="form-label">RUT</label>
-                    <input type="text" class="form-control" id="rut-paciente" required>
+                    <label class="form-label">FUR (Fecha Última Regla)</label>
+                    <input type="date" class="form-control" id="fur" required>
                   </div>
                   <div class="col-md-6">
-                    <label class="form-label">Nombre Completo</label>
-                    <input type="text" class="form-control" id="nombre-paciente" required>
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label">Fecha Nacimiento</label>
-                    <input type="date" class="form-control" id="fecha-nacimiento">
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label">Teléfono</label>
-                    <input type="tel" class="form-control" id="telefono-paciente">
+                    <label class="form-label">Fecha Probable de Parto</label>
+                    <input type="text" class="form-control bg-light" id="fpp" readonly>
                   </div>
                   <div class="col-12">
-                    <button type="submit" class="btn btn-primary me-2">
-                      <i class="material-icons me-1">save</i> Guardar
-                    </button>
-                    <button type="button" class="btn btn-outline-secondary" id="btn-cancelar-paciente">
-                      Cancelar
+                    <button type="submit" class="btn btn-primary w-100">
+                      <i class="material-icons me-2">calculate</i> Calcular
                     </button>
                   </div>
-                </form>
-
-                <!-- Listado -->
-                <div class="table-responsive">
-                  <table class="table table-hover">
-                    <thead>
-                      <tr>
-                        <th>RUT</th>
-                        <th>Nombre</th>
-                        <th>Edad</th>
-                        <th>Acciones</th>
-                      </tr>
-                    </thead>
-                    <tbody id="lista-pacientes">
-                      <!-- Datos dinámicos -->
-                    </tbody>
-                  </table>
                 </div>
-              </div>
-            </div>
-          </div>
+              </form>
 
-          <!-- Calculadora de Gestación -->
-          <div class="tab-pane fade" id="tab-calculadora">
-            <div class="card shadow-sm">
-              <div class="card-header bg-primary text-white">
-                <h5 class="mb-0"><i class="material-icons me-2">pregnancy</i> Calculadora de Gestación</h5>
-              </div>
-              <div class="card-body">
-                <div class="row">
-                  <!-- Formulario -->
-                  <div class="col-md-5">
-                    <form id="form-calculadora">
-                      <div class="mb-3">
-                        <label class="form-label">FUR (Fecha Última Regla)</label>
-                        <input type="date" class="form-control" id="fur" required>
-                      </div>
-                      <div class="mb-3">
-                        <label class="form-label">Fecha Probable de Parto</label>
-                        <input type="text" class="form-control bg-light" id="fpp" readonly>
-                      </div>
-                      <button type="submit" class="btn btn-primary w-100">
-                        <i class="material-icons me-2">calculate</i> Calcular
-                      </button>
-                    </form>
-                    
-                    <!-- Resultados -->
-                    <div class="card mt-4">
-                      <div class="card-body">
-                        <h5 class="card-title"><i class="material-icons me-2">insights</i> Progreso</h5>
-                        <div class="progress mb-2" style="height: 20px;">
-                          <div id="gestation-progress" class="progress-bar progress-bar-striped bg-success" 
-                               role="progressbar" style="width: 0%"></div>
-                        </div>
-                        <p id="semanas-gestacion" class="mb-0 text-center fw-bold">0 semanas</p>
-                      </div>
-                    </div>
+              <div class="card mt-4">
+                <div class="card-body">
+                  <h5 class="card-title"><i class="material-icons me-2">insights</i> Progreso</h5>
+                  <div class="progress mb-2" style="height: 20px;">
+                    <div id="gestation-progress" class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: 0%"></div>
                   </div>
-                  
-                  <!-- Visualización Fetal -->
-                  <div class="col-md-7">
-                    <div class="card h-100">
-                      <div class="card-header bg-light">
-                        <h5 class="mb-0"><i class="material-icons me-2">baby_changing_station</i> Desarrollo Fetal</h5>
-                      </div>
-                      <div class="card-body text-center">
-                        <!-- Contenedor de la animación -->
-                        <div id="fetal-animation-container" class="mb-3" 
-                             style="height: 250px; position: relative;">
-                          <img id="fetal-image" src="" alt="Desarrollo fetal" 
-                               class="img-fluid" style="max-height: 200px; transition: all 0.5s ease;">
-                          <div id="gestation-badge" class="badge bg-primary position-absolute" 
-                               style="bottom: 10px; right: 10px;">0 semanas</div>
-                        </div>
-                        
-                        <!-- Descripción -->
-                        <div id="fetal-description" class="p-3 bg-light rounded">
-                          <p class="mb-0">Ingrese la FUR para ver el desarrollo fetal.</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <p id="semanas-gestacion" class="mb-0 text-center fw-bold">0 semanas</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Modal para Ficha Clínica -->
-  <div class="modal fade" id="modal-ficha" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header bg-primary text-white">
-          <h5 class="modal-title"><i class="material-icons me-2">medical_services</i> Ficha Clínica</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body" id="contenido-ficha">
-          <!-- Contenido dinámico -->
-        </div>
-      </div>
-    </div>
-  </div>
+      </div> <!-- /.tab-content -->
+    </div> <!-- /.col-lg-10 -->
+  </div> <!-- /.row -->
+</div> <!-- /.container-fluid -->
 
-  <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="auth.js"></script>
-  <script src="app.js"></script>
+<footer class="footer mt-5">
+  <div class="footer-content text-center">
+    <p>&copy; 2025 Akame Paradice. Todos los derechos reservados.</p>
+    <div class="social-icons mb-2">
+      <a href="#" target="_blank" class="social-icon instagram"><i class="fab fa-instagram"></i></a>
+      <a href="#" target="_blank" class="social-icon facebook"><i class="fab fa-facebook-f"></i></a>
+      <a href="#" target="_blank" class="social-icon tiktok"><i class="fab fa-tiktok"></i></a>
+    </div>
+    <p>Hecho con 💖 por Nathita</p>
+  </div>
+</footer>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales/es.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="auth.js"></script>
+<script src="app.js"></script>
+
 </body>
 </html>

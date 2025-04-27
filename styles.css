@@ -1,131 +1,192 @@
 :root {
-  --color-primario: #e91e63; /* Rosa Material */
-  --color-secundario: #9c27b0; /* Púrpura Material */
-  --color-terciario: #3f51b5; /* Índigo Material */
-  --color-texto: #212121;
-  --color-fondo: #f5f5f5;
+  --color-primario: #f9b3d1; /* Rosado suave */
+  --color-secundario: #d9b2f2; /* Lavanda */
+  --color-terciario: #ffe0e9; /* Fondo pastel */
+  --color-acento: #ffdee3; /* Rosa claro */
+  --color-texto: #4a4a4a;
+  --color-blanco: #ffffff;
+  --sombra-suave: 0 6px 20px rgba(255, 192, 203, 0.3);
+  --borde-redondo: 20px;
 }
 
-/* Estilos generales */
+/* Fuente general */
 body {
-  font-family: 'Roboto', sans-serif;
-  background-color: var(--color-fondo);
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--color-terciario);
   color: var(--color-texto);
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
 }
 
-/* Login */
+/* Títulos */
+h1 {
+  color: var(--color-primario);
+  font-weight: 800;
+}
+h2, h3, h4, h5, h6 {
+  color: var(--color-texto);
+  font-weight: 700;
+}
+h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
+  color: var(--color-primario);
+  transition: color 0.3s ease;
+}
+
+/* LOGIN */
 .login-body {
-  background: linear-gradient(135deg, #fce4ec, #f8bbd0);
+  background: linear-gradient(145deg, #ffe0ec, #fce4f7);
   height: 100vh;
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .login-card {
-  border-radius: 8px;
-  overflow: hidden;
-  max-width: 450px;
-  margin: 0 auto;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+  background-color: var(--color-blanco);
+  border-radius: var(--borde-redondo);
+  padding: 3rem;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: var(--sombra-suave);
+  animation: fadeIn 1s ease-in-out;
 }
 
-/* Sidebar */
+/* SIDEBAR */
 .sidebar {
   height: 100vh;
   position: sticky;
   top: 0;
-  box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+  background-color: var(--color-blanco);
+  border-top-right-radius: var(--borde-redondo);
+  border-bottom-right-radius: var(--borde-redondo);
+  box-shadow: 4px 0 15px rgba(255, 182, 193, 0.2);
 }
 
 .list-group-item {
   border: none;
-  padding: 1rem 1.5rem;
-  transition: all 0.3s;
+  padding: 1.2rem 2rem;
+  font-weight: 600;
+  color: var(--color-texto);
+  transition: all 0.3s ease-in-out;
 }
 
 .list-group-item:hover {
-  background-color: #f5f5f5;
+  background-color: var(--color-acento);
+  border-radius: var(--borde-redondo);
 }
 
 .list-group-item.active {
   background-color: var(--color-primario);
-  border-color: var(--color-primario);
+  color: white;
+  border-radius: var(--borde-redondo);
 }
 
-/* Calculadora de Gestación */
+/* CALCULADORA */
 .calculator-container {
-  max-width: 800px;
-  margin: 0 auto;
+  max-width: 900px;
+  margin: 3rem auto;
+  background-color: white;
+  border-radius: var(--borde-redondo);
+  box-shadow: var(--sombra-suave);
+  padding: 2rem;
 }
 
+/* ANIMACIÓN EMBARAZO */
 .pregnancy-animation {
-  width: 100%;
-  height: 200px;
+  height: 220px;
   background: url('https://example.com/pregnancy-animation.svg') no-repeat center;
   background-size: contain;
-  transition: all 0.5s ease;
+  animation: fadeIn 1.2s ease;
 }
 
+/* PROGRESO */
 .gestation-progress {
-  height: 20px;
-  background-color: #e0e0e0;
-  border-radius: 10px;
+  height: 25px;
+  background-color: #ffeef3;
+  border-radius: 50px;
   overflow: hidden;
+  margin-top: 1.5rem;
 }
 
 .progress-bar {
   height: 100%;
-  background: linear-gradient(90deg, #e91e63, #9c27b0);
+  background: linear-gradient(90deg, #f9b3d1, #d9b2f2);
   width: 0%;
-  transition: width 0.5s ease;
+  transition: width 0.6s ease-in-out;
+  border-radius: 50px;
 }
 
-/* Efectos Material */
+/* BOTONES */
 .btn {
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-weight: 500;
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  border-radius: 50px;
   transition: all 0.3s;
-  border-radius: 4px;
+  font-size: 1rem;
+  letter-spacing: 0.5px;
 }
 
 .btn-primary {
   background-color: var(--color-primario);
+  color: white;
   border: none;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  box-shadow: var(--sombra-suave);
 }
 
 .btn-primary:hover {
-  background-color: #c2185b;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  background-color: #ec80a0;
+  transform: scale(1.05);
 }
 
-/* Animaciones */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
+/* TARJETAS */
 .card {
-  animation: fadeIn 0.5s ease-out;
-  border-radius: 8px;
-  overflow: hidden;
-  border: none;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  border-radius: var(--borde-redondo);
+  background-color: white;
+  box-shadow: var(--sombra-suave);
+  padding: 2rem;
+  animation: fadeIn 0.8s ease;
 }
-/* Animación fetal */
+
+/* ANIMACIÓN FETAL */
 #fetal-animation-container {
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  overflow: hidden;
-  transition: all 0.5s ease;
+  background-color: #fff6fa;
+  border-radius: var(--borde-redondo);
+  padding: 1.5rem;
+  box-shadow: var(--sombra-suave);
 }
 
 #fetal-image {
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
-  transform-origin: center bottom;
-  animation: pulse 2s infinite alternate;
+  width: 100%;
+  filter: drop-shadow(0 6px 10px rgba(0,0,0,0.1));
+  animation: pulse 2.5s infinite alternate;
+}
+
+/* SEMANAS */
+#gestation-badge {
+  font-size: 0.9rem;
+  padding: 6px 14px;
+  background-color: var(--color-secundario);
+  color: white;
+  border-radius: 12px;
+  display: inline-block;
+  margin-top: 1rem;
+  box-shadow: var(--sombra-suave);
+}
+
+/* DESCRIPCIÓN */
+#fetal-description {
+  padding: 1.2rem;
+  border-left: 5px solid var(--color-primario);
+  background-color: #fffafc;
+  border-radius: var(--borde-redondo);
+  margin-top: 1rem;
+}
+
+/* ANIMACIONES */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes pulse {
@@ -133,16 +194,110 @@ body {
   100% { transform: scale(1.05); }
 }
 
-/* Badge de semanas */
-#gestation-badge {
-  font-size: 0.8rem;
-  padding: 5px 10px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+/* BOTONES EN TABLA */
+.table .btn-group .btn {
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.25rem !important;
+  margin-right: 2px;
 }
 
-/* Descripción fetal */
-#fetal-description {
-  min-height: 100px;
-  transition: all 0.3s ease;
-  border-left: 4px solid var(--color-primario);
+.table .btn-group .btn:last-child {
+  margin-right: 0;
 }
+
+.btn-info {
+  background-color: #17a2b8;
+  border-color: #17a2b8;
+  color: white;
+}
+
+.btn-info:hover {
+  background-color: #138496;
+}
+
+.btn-success {
+  background-color: #28a745;
+  border-color: #28a745;
+  color: white;
+}
+
+.btn-success:hover {
+  background-color: #218838;
+}
+
+/* MODAL */
+.modal-lg {
+  max-width: 800px;
+}
+
+.modal-body {
+  padding: 2rem;
+}
+
+/* EFECTO HOVER FILAS TABLA */
+.table-hover tbody tr:hover {
+  background-color: rgba(249, 179, 209, 0.1);
+}
+
+/* FORMULARIO PACIENTE */
+#form-paciente {
+  transition: all 0.3s ease;
+  padding: 1.5rem;
+  background-color: #f8f9fa;
+  border-radius: 0.5rem;
+}
+
+.footer {
+  background-color: var(--color-primario);
+  color: white;
+  text-align: center;
+  padding: 1.5rem 1rem;
+  margin-top: 3rem;
+  border-top-left-radius: var(--borde-redondo);
+  border-top-right-radius: var(--borde-redondo);
+  box-shadow: 0 -4px 15px rgba(249, 179, 209, 0.2);
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  font-size: 0.9rem;
+}
+
+.footer-content p {
+  margin: 0.3rem 0;
+}
+
+/* Para que sea responsivo */
+@media (max-width: 768px) {
+  .footer-content {
+    padding: 0 1rem;
+  }
+}
+.social-icons {
+  margin: 1rem 0;
+}
+
+.social-icon {
+  display: inline-block;
+  margin: 0 8px;
+  background-color: var(--color-secundario);
+  color: white;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  border-radius: 50%;
+  text-align: center;
+  font-size: 1.2rem;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.social-icon:hover {
+  background-color: var(--color-primario);
+  transform: scale(1.1);
+}
+
+/* Colores específicos para cada red */
+.instagram { background: linear-gradient(45deg, #f9b3d1, #d9b2f2); }
+.facebook { background-color: #4267B2; }
+.tiktok { background-color: #000000; }
