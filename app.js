@@ -64,13 +64,34 @@ document.addEventListener('DOMContentLoaded', function() {
   // =============================================
   // FUNCIONES DE INICIALIZACIÓN
   // =============================================
+  
   function init() {
     setupEventListeners();
     cargarPacientes();
     cargarTurnos();
     cargarDashboard();
     inicializarGrafico();
-    inicializarCalendario();
+  
+    // Detección universal del estado de carga
+    function checkReadyState() {
+      if (document.readyState === 'complete') {
+        // Inicializar calendario cuando se muestre la pestaña
+        const tabTurnos = document.querySelector('a[href="#tab-turnos"]');
+        if (tabTurnos) {
+          tabTurnos.addEventListener('shown.bs.tab', inicializarCalendario);
+          
+          // Inicializar inmediatamente si ya está en la pestaña correcta
+          if (document.querySelector('#tab-turnos.active')) {
+            setTimeout(inicializarCalendario, 100);
+          }
+        }
+      } else {
+        setTimeout(checkReadyState, 100);
+      }
+    }
+  
+    // Iniciar verificación
+    checkReadyState();
   }
 
   function setupEventListeners() {
@@ -772,10 +793,46 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function inicializarCalendario() {
+    console.log('Inicializando calendario...');
     const calendarEl = document.getElementById('calendario-turnos');
-    if (!calendarEl) return;
-
-    const calendar = new FullCalendar.Calendar(calendarEl, {
+    
+    if (!calendarEl) {
+      console.error('Elemento del calendario no encontrado');
+      return;
+    }
+  
+    // Limpiar el calendario si ya existe
+    if (window.calendar) {
+      window.calendar.destroy();
+    }
+  
+    // Crear eventos en formato compatible con FullCalendar
+    const eventos = turnos.map(turno => {
+      return {
+        id: turno.id,
+        title: `${turno.pacienteNombre} - ${formatTipoControl(turno.tipo)}`,
+        start: turno.fechaHora || turno.start,
+        backgroundColor: getColorForAppointmentType(turno.tipo),
+        extendedProps: {
+          paciente: turno.pacienteNombre,
+          tipo: turno.tipo,
+          estado: turno.estado,
+          observaciones: turno.observaciones
+        }
+      };
+    });
+  
+    // Si no hay turnos, agregar uno de ejemplo
+    if (eventos.length === 0) {
+      eventos.push({
+        title: 'Ejemplo: Control Prenatal',
+        start: new Date(),
+        backgroundColor: '#28a745'
+      });
+    }
+  
+    // Configurar el calendario
+    window.calendar = new FullCalendar.Calendar(calendarEl, {
       initialView: 'dayGridMonth',
       locale: 'es',
       headerToolbar: {
@@ -783,15 +840,532 @@ document.addEventListener('DOMContentLoaded', function() {
         center: 'title',
         right: 'dayGridMonth,timeGridWeek,timeGridDay'
       },
-      events: turnos.map(turno => ({
-        title: `${turno.pacienteNombre} - ${formatTipoControl(turno.tipo)}`,
-        start: turno.fechaHora,
-        backgroundColor: turno.tipo === 'emergencia' ? '#dc3545' : 
-                       turno.tipo === 'seguimiento' ? '#ffc107' : '#198754'
-      }))
+      events: eventos,
+      eventClick: function(info) {
+        mostrarDetalleTurno(info.event);
+      }
     });
-    calendar.render();
+  
+    window.calendar.render();
+    console.log('Calendario renderizado correctamente');
   }
+  // Agregar al inicio con las demás variables de estado
+let disponibilidad = JSON.parse(localStorage.getItem('disponibilidad')) || [];
+let configuracionTurnos = JSON.parse(localStorage.getItem('configuracionTurnos')) || [];
+
+// En setupEventListeners() agregar:
+if (document.getElementById('btn-nueva-configuracion')) {
+  document.getElementById('btn-nueva-configuracion').addEventListener('click', mostrarModalConfiguracion);
+}
+if (document.getElementById('btn-nuevo-turno')) {
+  document.getElementById('btn-nuevo-turno').addEventListener('click', mostrarModalNuevoTurno);
+}
+
+function formatTipoControl(tipo) {
+  const tipos = {
+    'control_rutina': 'Control de Rutina',
+    'seguimiento': 'Seguimiento',
+    'emergencia': 'Emergencia',
+    'control': 'Control Prenatal',
+    'consulta': 'Consulta General',
+    'ecografia': 'Ecografía'
+  };
+  return tipos[tipo] || tipo;
+}
+
+function getColorForAppointmentType(type) {
+  const colors = {
+    'control': '#28a745',
+    'control_rutina': '#28a745',
+    'consulta': '#17a2b8',
+    'emergencia': '#dc3545',
+    'ecografia': '#ffc107',
+    'seguimiento': '#6f42c1'
+  };
+  return colors[type] || '#6c757d';
+}
+
+// Nueva función para configuración de disponibilidad
+function mostrarModalConfiguracion() {
+  if (!document.getElementById('modal-configuracion')) {
+    const modalHTML = `
+      <div class="modal fade" id="modal-configuracion" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Configurar Disponibilidad</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="contenido-configuracion">
+              <form id="form-configuracion">
+                <div class="mb-3">
+                  <label class="form-label">Seleccione los días de atención</label>
+                  <div class="d-flex flex-wrap gap-3">
+                    ${['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'].map((dia, index) => `
+                      <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="dia-${index}" 
+                               name="dias" value="${index}" ${configuracionTurnos.dias?.includes(index) ? 'checked' : ''}>
+                        <label class="form-check-label" for="dia-${index}">${dia}</label>
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Horario de atención</label>
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <label class="form-label">Hora inicio</label>
+                      <input type="time" class="form-control" name="horaInicio" 
+                             value="${configuracionTurnos.horaInicio || '08:00'}">
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Hora fin</label>
+                      <input type="time" class="form-control" name="horaFin" 
+                             value="${configuracionTurnos.horaFin || '17:00'}">
+                    </div>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Duración de turnos (minutos)</label>
+                  <input type="number" class="form-control" name="duracionTurno" 
+                         value="${configuracionTurnos.duracionTurno || '30'}" min="15" max="120">
+                </div>
+                <div class="d-flex justify-content-end gap-2">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                  <button type="submit" class="btn btn-primary">Guardar Configuración</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+  }
+
+  document.getElementById('form-configuracion').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    
+    configuracionTurnos = {
+      dias: Array.from(formData.getAll('dias')).map(Number),
+      horaInicio: formData.get('horaInicio'),
+      horaFin: formData.get('horaFin'),
+      duracionTurno: formData.get('duracionTurno'),
+      matronaId: JSON.parse(localStorage.getItem('usuarioActual')).username
+    };
+    
+    localStorage.setItem('configuracionTurnos', JSON.stringify(configuracionTurnos));
+    mostrarAlerta('Configuración guardada exitosamente', 'success');
+    bootstrap.Modal.getInstance(document.getElementById('modal-configuracion')).hide();
+    inicializarCalendario();
+  });
+
+  new bootstrap.Modal(document.getElementById('modal-configuracion')).show();
+}
+
+// Función para mostrar modal de nuevo turno
+function mostrarModalNuevoTurno() {
+  if (!document.getElementById('modal-turno')) {
+    const modalHTML = `
+      <div class="modal fade" id="modal-turno" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Agendar Nuevo Turno</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="contenido-turno">
+              <form id="form-nuevo-turno">
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label class="form-label">Paciente</label>
+                    <select class="form-select" id="select-paciente-turno" required>
+                      <option value="">Seleccione un paciente</option>
+                      ${pacientes.map(p => `<option value="${p.id}">${p.nombre} (${p.rut})</option>`).join('')}
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Tipo de Consulta</label>
+                    <select class="form-select" name="tipoConsulta" required>
+                      <option value="">Seleccione tipo</option>
+                      <option value="control">Control Prenatal</option>
+                      <option value="consulta">Consulta General</option>
+                      <option value="emergencia">Emergencia</option>
+                      <option value="ecografia">Ecografía</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Fecha</label>
+                    <input type="date" class="form-control" id="fecha-turno" required>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Hora</label>
+                    <select class="form-select" id="hora-turno" required>
+                      <option value="">Seleccione hora</option>
+                      <!-- Las horas se llenarán dinámicamente -->
+                    </select>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label">Matrona</label>
+                    <select class="form-select" name="matrona" required>
+                      <option value="">Seleccione matrona</option>
+                      <option value="matrona1">Dra. Pérez</option>
+                      <option value="matrona2">Dra. González</option>
+                      <option value="matrona3">Dra. Martínez</option>
+                    </select>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label">Observaciones</label>
+                    <textarea class="form-control" rows="3" name="observaciones"></textarea>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                  <button type="submit" class="btn btn-primary">Agendar Turno</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+  }
+
+  // Llenar horas disponibles según configuración
+  document.getElementById('fecha-turno').addEventListener('change', function() {
+    const fechaSeleccionada = new Date(this.value);
+    const diaSemana = fechaSeleccionada.getDay(); // 0=Domingo, 1=Lunes, etc.
+    
+    if (configuracionTurnos.dias && configuracionTurnos.dias.includes(diaSemana - 1)) {
+      const horaInicio = configuracionTurnos.horaInicio || '08:00';
+      const horaFin = configuracionTurnos.horaFin || '17:00';
+      const duracion = configuracionTurnos.duracionTurno || 30;
+      
+      const selectHora = document.getElementById('hora-turno');
+      selectHora.innerHTML = '<option value="">Seleccione hora</option>';
+      
+      // Generar horas disponibles
+      let horaActual = horaInicio;
+      while (horaActual < horaFin) {
+        const option = document.createElement('option');
+        option.value = horaActual;
+        option.textContent = horaActual;
+        selectHora.appendChild(option);
+        
+        // Sumar la duración del turno
+        const [horas, minutos] = horaActual.split(':').map(Number);
+        const fecha = new Date();
+        fecha.setHours(horas, minutos + parseInt(duracion), 0, 0);
+        horaActual = `${String(fecha.getHours()).padStart(2, '0')}:${String(fecha.getMinutes()).padStart(2, '0')}`;
+      }
+    } else {
+      document.getElementById('hora-turno').innerHTML = '<option value="">No hay horarios disponibles este día</option>';
+    }
+  });
+
+  document.getElementById('form-nuevo-turno').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    const pacienteId = document.getElementById('select-paciente-turno').value;
+    const paciente = pacientes.find(p => p.id == pacienteId);
+    
+    if (!paciente) {
+      mostrarAlerta('Debe seleccionar un paciente válido', 'danger');
+      return;
+    }
+
+    const nuevoTurno = {
+      id: Date.now(),
+      title: `${paciente.nombre} - ${formData.get('tipoConsulta')}`,
+      start: `${document.getElementById('fecha-turno').value}T${formData.get('hora')}:00`,
+      pacienteId: paciente.id,
+      pacienteNombre: paciente.nombre,
+      tipo: formData.get('tipoConsulta'),
+      matrona: formData.get('matrona'),
+      observaciones: formData.get('observaciones'),
+      estado: 'pendiente',
+      backgroundColor: getColorForAppointmentType(formData.get('tipoConsulta'))
+    };
+    
+    turnos.push(nuevoTurno);
+    localStorage.setItem('turnos', JSON.stringify(turnos));
+    
+    mostrarAlerta('Turno agendado exitosamente', 'success');
+    bootstrap.Modal.getInstance(document.getElementById('modal-turno')).hide();
+    inicializarCalendario();
+  });
+
+  new bootstrap.Modal(document.getElementById('modal-turno')).show();
+}
+
+// Función para obtener color según tipo de cita
+function getColorForAppointmentType(type) {
+  const colors = {
+    'control': '#28a745',
+    'consulta': '#17a2b8',
+    'emergencia': '#dc3545',
+    'ecografia': '#ffc107'
+  };
+  return colors[type] || '#6c757d';
+}
+
+// Actualizar la función inicializarCalendario()
+function inicializarCalendario() {
+  console.log('Inicializando calendario universal...');
+  const calendarEl = document.getElementById('calendario-turnos');
+  
+  if (!calendarEl) {
+    console.error('Elemento del calendario no encontrado');
+    return;
+  }
+
+  // Solución universal para problemas de renderizado
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  if (isSafari) {
+    calendarEl.style.visibility = 'hidden';
+    setTimeout(() => {
+      calendarEl.style.visibility = 'visible';
+    }, 100);
+  }
+
+  // Destruir calendario existente si hay uno
+  if (window.calendar) {
+    window.calendar.destroy();
+  }
+
+  // Formatear eventos de manera compatible
+  const eventos = turnos.map(turno => {
+    // Manejo universal de fechas
+    let fechaEvento;
+    if (turno.start) {
+      fechaEvento = new Date(turno.start);
+    } else if (turno.fechaHora) {
+      // Convertir formato ISO a Date (compatible con todos los navegadores)
+      const fechaStr = turno.fechaHora.includes('T') ? 
+        turno.fechaHora : 
+        `${turno.fechaHora}T00:00:00`;
+      fechaEvento = new Date(fechaStr);
+    } else {
+      fechaEvento = new Date(); // Fecha actual como fallback
+    }
+
+    // Verificar fecha válida
+    if (isNaN(fechaEvento.getTime())) {
+      console.warn('Fecha inválida detectada, usando fecha actual', turno);
+      fechaEvento = new Date();
+    }
+
+    return {
+      id: String(turno.id || Date.now()), // IDs como string para compatibilidad
+      title: `${turno.pacienteNombre || 'Paciente'} - ${formatTipoControl(turno.tipo)}`,
+      start: fechaEvento,
+      backgroundColor: getColorForAppointmentType(turno.tipo),
+      extendedProps: {
+        paciente: turno.pacienteNombre,
+        tipo: turno.tipo,
+        estado: turno.estado || 'pendiente',
+        observaciones: turno.observaciones,
+        matrona: turno.matrona
+      }
+    };
+  });
+
+  // Configuración universal del calendario
+  window.calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    locale: 'es',
+    timeZone: 'local',
+    headerToolbar: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'dayGridMonth,timeGridWeek,timeGridDay'
+    },
+    events: eventos.length > 0 ? eventos : [{
+      title: 'Ejemplo: Control Prenatal',
+      start: new Date(),
+      backgroundColor: '#28a745'
+    }],
+    eventClick: function(info) {
+      mostrarDetalleTurno(info.event);
+    },
+    datesSet: function() {
+      // Solución universal para problemas de redimensionamiento
+      setTimeout(() => {
+        try {
+          window.calendar.updateSize();
+        } catch (e) {
+          console.log('Error al actualizar tamaño:', e);
+        }
+      }, 100);
+    },
+    eventDidMount: function(info) {
+      // Tooltip compatible con todos los navegadores
+      if (info.event.extendedProps.observaciones) {
+        new bootstrap.Tooltip(info.el, {
+          title: info.event.extendedProps.observaciones,
+          placement: 'top',
+          trigger: 'hover',
+          container: 'body'
+        });
+      }
+    }
+  });
+
+  // Renderizado universal con verificación
+  function renderCalendario() {
+    try {
+      window.calendar.render();
+      console.log('Calendario renderizado con éxito');
+      
+      // Solución para Safari y otros navegadores con problemas de visualización
+      setTimeout(() => {
+        window.calendar.updateSize();
+        calendarEl.style.opacity = '1';
+      }, 200);
+    } catch (error) {
+      console.error('Error al renderizar calendario:', error);
+      // Reintentar después de un breve retraso
+      setTimeout(renderCalendario, 300);
+    }
+  }
+
+  // Inicialmente transparente para evitar parpadeo
+  calendarEl.style.opacity = '0';
+  renderCalendario();
+}
+
+// Función para mostrar detalles del turno
+function mostrarDetalleTurno(event) {
+  if (!document.getElementById('modal-detalle-turno')) {
+    const modalHTML = `
+      <div class="modal fade" id="modal-detalle-turno" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+              <h5 class="modal-title">Detalles del Turno</h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="contenido-detalle-turno"></div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                <i class="material-icons me-1">close</i> Cerrar
+              </button>
+              <button type="button" class="btn btn-danger" id="btn-cancelar-turno">
+                <i class="material-icons me-1">cancel</i> Cancelar Turno
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+  }
+
+  const turno = event.extendedProps;
+  const fecha = new Date(event.start);
+  const tipo = formatTipoControl(turno.tipo);
+  
+  const modalContent = document.getElementById('contenido-detalle-turno');
+  modalContent.innerHTML = `
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="d-flex align-items-center mb-3">
+          <div class="badge bg-${turno.tipo === 'emergencia' ? 'danger' : 'primary'} me-3 p-2">
+            <i class="material-icons">event</i>
+          </div>
+          <div>
+            <h4 class="mb-0">${turno.paciente}</h4>
+            <span class="text-muted">${tipo}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body">
+            <h6 class="card-title text-primary">
+              <i class="material-icons me-2">schedule</i> Fecha y Hora
+            </h6>
+            <p class="card-text">
+              ${fecha.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}
+              <br>
+              ${fecha.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-6">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body">
+            <h6 class="card-title text-primary">
+              <i class="material-icons me-2">person</i> Profesional
+            </h6>
+            <p class="card-text">${turno.matrona || 'No asignada'}</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-12">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body">
+            <h6 class="card-title text-primary">
+              <i class="material-icons me-2">info</i> Estado
+            </h6>
+            <span class="badge ${turno.estado === 'cancelado' ? 'bg-danger' : 'bg-success'} p-2">
+              ${turno.estado}
+            </span>
+          </div>
+        </div>
+      </div>
+      
+      ${turno.observaciones ? `
+        <div class="col-12">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body">
+              <h6 class="card-title text-primary">
+                <i class="material-icons me-2">notes</i> Observaciones
+              </h6>
+              <p class="card-text">${turno.observaciones}</p>
+            </div>
+          </div>
+        </div>
+      ` : ''}
+    </div>
+  `;
+
+  const modal = new bootstrap.Modal(document.getElementById('modal-detalle-turno'));
+  modal.show();
+
+  document.getElementById('btn-cancelar-turno').addEventListener('click', function() {
+    if (confirm('¿Está segura que desea cancelar este turno?')) {
+      // Actualizar el estado del turno
+      const turnoActualizado = turnos.find(t => t.id == event.id);
+      if (turnoActualizado) {
+        turnoActualizado.estado = 'cancelado';
+        turnoActualizado.backgroundColor = '#dc3545';
+        localStorage.setItem('turnos', JSON.stringify(turnos));
+        inicializarCalendario();
+      }
+      modal.hide();
+      mostrarAlerta('Turno cancelado exitosamente', 'success');
+    }
+  });
+}
+
+// Función para actualizar turno al moverlo en el calendario
+function actualizarTurno(event) {
+  const turno = turnos.find(t => t.id == event.id);
+  if (turno) {
+    turno.start = event.startStr;
+    if (event.endStr) turno.end = event.endStr;
+    localStorage.setItem('turnos', JSON.stringify(turnos));
+  }
+}
 
   // Inicializar la aplicación
   init();

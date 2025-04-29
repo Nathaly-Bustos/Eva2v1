@@ -301,3 +301,152 @@ h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
 .instagram { background: linear-gradient(45deg, #f9b3d1, #d9b2f2); }
 .facebook { background-color: #4267B2; }
 .tiktok { background-color: #000000; }
+
+/* Estilos para el calendario */
+.fc-daygrid-event {
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.fc-daygrid-event:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.fc-event-title {
+  font-weight: 500;
+}
+
+.fc-day-past {
+  background-color: #f8f9fa;
+}
+
+/* Estilos para los modales de turnos */
+#modal-detalle-turno .modal-body p {
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  background-color: #f8f9fa;
+  border-radius: 0.25rem;
+}
+/* Estilos para el calendario */
+.fc {
+  font-family: 'Poppins', sans-serif;
+}
+
+.fc-header-toolbar {
+  margin-bottom: 1.5rem !important;
+}
+
+.fc-toolbar-title {
+  font-weight: 700;
+  color: var(--color-texto);
+}
+
+.fc-button {
+  background-color: var(--color-primario) !important;
+  border: none !important;
+  color: white !important;
+  font-weight: 600 !important;
+  text-transform: capitalize !important;
+  border-radius: 50px !important;
+  padding: 0.5rem 1.5rem !important;
+  box-shadow: var(--sombra-suave) !important;
+}
+
+.fc-button:hover {
+  background-color: #ec80a0 !important;
+  transform: scale(1.05) !important;
+}
+
+.fc-button-active {
+  background-color: #ec80a0 !important;
+}
+
+.fc-daygrid-day-number, 
+.fc-col-header-cell-cushion {
+  color: var(--color-texto);
+  text-decoration: none !important;
+}
+
+.fc-daygrid-day-frame {
+  border-radius: 10px;
+  margin: 2px;
+}
+
+.fc-day-today {
+  background-color: rgba(249, 179, 209, 0.2) !important;
+}
+
+.fc-daygrid-event {
+  border-radius: 8px !important;
+  border: none !important;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  padding: 3px 6px !important;
+  margin-bottom: 2px !important;
+}
+
+.fc-daygrid-event:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.fc-event-title {
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: normal !important;
+}
+
+.fc-event-time {
+  font-weight: 600;
+  margin-right: 4px;
+}
+
+/* Colores para diferentes tipos de turnos */
+.fc-event-control { background-color: #28a745; } /* Control prenatal */
+.fc-event-consulta { background-color: #17a2b8; } /* Consulta general */
+.fc-event-emergencia { background-color: #dc3545; } /* Emergencia */
+.fc-event-ecografia { background-color: #ffc107; color: #212529; } /* Ecografía */
+
+/* Vista de día/semana */
+.fc-timegrid-slots td {
+  border-color: rgba(0,0,0,0.05);
+}
+
+.fc-timegrid-slot {
+  height: 2.5em !important;
+}
+
+.fc-timegrid-event-harness {
+  margin-top: 1px;
+}
+
+/* Fuera del horario laboral */
+.fc-non-business {
+  background-color: #f8f9fa;
+}
+
+/* Evento seleccionado */
+.fc-highlight {
+  background-color: rgba(249, 179, 209, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .fc-toolbar {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .fc-toolbar-title {
+    font-size: 1.5rem !important;
+  }
+  
+  .fc-button {
+    padding: 0.3rem 1rem !important;
+    font-size: 0.9rem !important;
+  }
+  
+  .fc-event-title {
+    font-size: 0.7rem;
+  }
+}
