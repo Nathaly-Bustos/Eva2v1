@@ -1,35 +1,36 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>MatronaPlus - Login</title>
   <!-- Material Icons -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <!-- Bootstrap con tema Material -->
+  <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Estilos personalizados -->
-  <link rel="stylesheet" href="styles.css">
+  <!-- FontAwesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body class="login-body">
+<body class="login-body d-flex align-items-center justify-content-center vh-100">
+
   <div class="login-container">
     <div class="card login-card shadow-lg">
       <div class="card-body p-5 text-center">
         <div class="mb-4">
-          <i class="material-icons md-48 text-primary">pregnant_woman</i>
+          <i class="material-icons md-48 text-primary" style="font-size: 48px;">pregnant_woman</i>
           <h1 class="h3 mt-3">MatronaPlus</h1>
           <p class="text-muted">Sistema especializado para matronas</p>
         </div>
         
         <form id="login-form" class="needs-validation" novalidate>
-          <div class="form-floating mb-3">
+          <div class="form-floating mb-3 text-start">
             <input type="text" class="form-control" id="username" placeholder="Usuario" required>
             <label for="username"><i class="material-icons me-2">person</i>Usuario</label>
           </div>
           
-          <div class="form-floating mb-4">
+          <div class="form-floating mb-4 text-start">
             <input type="password" class="form-control" id="password" placeholder="Contraseña" required>
             <label for="password"><i class="material-icons me-2">lock</i>Contraseña</label>
           </div>
@@ -41,10 +42,11 @@
       </div>
     </div>
   </div>
-  <footer class="footer">
+
+  <footer class="footer mt-4 text-center text-muted small">
     <div class="footer-content">
       <p>&copy; 2025 Akame Paradice. Todos los derechos reservados.</p>
-      <div class="social-icons">
+      <div class="social-icons d-flex justify-content-center gap-3 mb-2">
         <a href="#" target="_blank" class="social-icon instagram"><i class="fab fa-instagram"></i></a>
         <a href="#" target="_blank" class="social-icon facebook"><i class="fab fa-facebook-f"></i></a>
         <a href="#" target="_blank" class="social-icon tiktok"><i class="fab fa-tiktok"></i></a>
@@ -52,12 +54,10 @@
       <p>Hecho con 💖 por Nathita</p>
     </div>
   </footer>
-  
-  
+
   <!-- Bootstrap JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <!-- Lógica de autenticación -->
   <script src="auth.js"></script>
-
 </body>
 </html>

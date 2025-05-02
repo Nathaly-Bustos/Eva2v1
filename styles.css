@@ -450,3 +450,38 @@ h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     font-size: 0.7rem;
   }
 }
+/* Fondo y centrado del body */
+.login-body {
+  background: linear-gradient(135deg, #ffe6f0 0%, #fddde6 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+/* Tarjeta de login */
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  border-radius: 1rem;
+}
+
+/* Footer */
+.footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: transparent;
+  padding: 10px 0;
+}
+
+/* Íconos sociales */
+.social-icons a {
+  color: #666;
+  font-size: 1.2rem;
+  transition: color 0.3s;
+}
+
+.social-icons a:hover {
+  color: #007bff;
+}
