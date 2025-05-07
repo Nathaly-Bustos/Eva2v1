@@ -127,6 +127,7 @@
                 <div class="col-md-6">
                   <label class="form-label">RUT</label>
                   <input type="text" class="form-control" id="rut-paciente" required>
+                  <div class="invalid-feedback">Por favor ingresa un RUT válido.</div>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label">Nombre Completo</label>
@@ -135,10 +136,12 @@
                 <div class="col-md-6">
                   <label class="form-label">Fecha Nacimiento</label>
                   <input type="date" class="form-control" id="fecha-nacimiento">
+                  <div class="invalid-feedback">La fecha no puede ser futura.</div>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label">Teléfono</label>
                   <input type="tel" class="form-control" id="telefono-paciente">
+                  <div class="invalid-feedback">El teléfono debe tener 9 dígitos.</div>
                 </div>
                 <div class="col-12">
                   <button type="submit" class="btn btn-primary me-2">
@@ -267,18 +270,22 @@
                 <div class="col-md-6">
                   <label class="form-label">Paciente</label>
                   <input type="text" class="form-control" id="nombre-receta" required>
+                  <div class="invalid-feedback">Nombre del paciente requerido.</div>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label">Medicamento</label>
                   <input type="text" class="form-control" id="medicamento-receta" required>
+                  <div class="invalid-feedback">Medicamento obligatorio.</div>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label">Dosis</label>
                   <input type="text" class="form-control" id="dosis-receta" required>
+                  <div class="invalid-feedback">Dosis obligatoria.</div>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label">Indicaciones</label>
                   <input type="text" class="form-control" id="indicaciones-receta" required>
+                  <div class="invalid-feedback">Indicaciones requeridas.</div>
                 </div>
                 <div class="col-12">
                   <button type="submit" class="btn btn-primary w-100">
@@ -310,6 +317,7 @@
                   <div class="col-md-6">
                     <label class="form-label">FUR (Fecha Última Regla)</label>
                     <input type="date" class="form-control" id="fur" required>
+                    <div class="invalid-feedback">La FUR no puede ser futura.</div>
                   </div>
                   <div class="col-md-6">
                     <label class="form-label">Fecha Probable de Parto</label>

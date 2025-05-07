@@ -1366,8 +1366,7 @@ function getColorForAppointmentType(type) {
   // Inicializar la aplicación
   init();
 });
-
-
+// Validaciones personalizadas de formularios para dashboard
 document.addEventListener('DOMContentLoaded', () => {
   const forms = document.querySelectorAll('form');
 
@@ -1375,7 +1374,6 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', event => {
       let isValid = form.checkValidity();
 
-      // Validaciones por formulario
       if (form.id === 'form-paciente') {
         const rutInput = form.querySelector('#rut-paciente');
         const fechaNacimientoInput = form.querySelector('#fecha-nacimiento');
@@ -1457,7 +1455,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Validador de RUT chileno
   function validarRUT(rut) {
     rut = rut.replace(/\./g, '').replace(/-/g, '').toUpperCase();
     if (!/^[0-9]+[0-9K]$/.test(rut)) return false;
