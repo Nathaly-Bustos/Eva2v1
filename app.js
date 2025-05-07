@@ -1366,3 +1366,114 @@ function getColorForAppointmentType(type) {
   // Inicializar la aplicación
   init();
 });
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  const forms = document.querySelectorAll('form');
+
+  forms.forEach(form => {
+    form.addEventListener('submit', event => {
+      let isValid = form.checkValidity();
+
+      // Validaciones por formulario
+      if (form.id === 'form-paciente') {
+        const rutInput = form.querySelector('#rut-paciente');
+        const fechaNacimientoInput = form.querySelector('#fecha-nacimiento');
+        const telefonoInput = form.querySelector('#telefono-paciente');
+
+        if (!validarRUT(rutInput.value)) {
+          rutInput.setCustomValidity('RUT inválido');
+          isValid = false;
+        } else {
+          rutInput.setCustomValidity('');
+        }
+
+        if (fechaNacimientoInput.value && new Date(fechaNacimientoInput.value) > new Date()) {
+          fechaNacimientoInput.setCustomValidity('La fecha no puede ser futura');
+          isValid = false;
+        } else {
+          fechaNacimientoInput.setCustomValidity('');
+        }
+
+        if (telefonoInput.value && !/^\d{9}$/.test(telefonoInput.value)) {
+          telefonoInput.setCustomValidity('Debe tener 9 dígitos');
+          isValid = false;
+        } else {
+          telefonoInput.setCustomValidity('');
+        }
+      }
+
+      if (form.id === 'form-receta') {
+        const nombre = form.querySelector('#nombre-receta');
+        const medicamento = form.querySelector('#medicamento-receta');
+        const dosis = form.querySelector('#dosis-receta');
+        const indicaciones = form.querySelector('#indicaciones-receta');
+
+        if (!nombre.value.trim()) {
+          nombre.setCustomValidity('Campo obligatorio');
+          isValid = false;
+        } else {
+          nombre.setCustomValidity('');
+        }
+
+        if (!medicamento.value.trim()) {
+          medicamento.setCustomValidity('Campo obligatorio');
+          isValid = false;
+        } else {
+          medicamento.setCustomValidity('');
+        }
+
+        if (!dosis.value.trim()) {
+          dosis.setCustomValidity('Campo obligatorio');
+          isValid = false;
+        } else {
+          dosis.setCustomValidity('');
+        }
+
+        if (!indicaciones.value.trim()) {
+          indicaciones.setCustomValidity('Campo obligatorio');
+          isValid = false;
+        } else {
+          indicaciones.setCustomValidity('');
+        }
+      }
+
+      if (form.id === 'form-calculadora') {
+        const fur = form.querySelector('#fur');
+        if (fur.value && new Date(fur.value) > new Date()) {
+          fur.setCustomValidity('La FUR no puede ser futura');
+          isValid = false;
+        } else {
+          fur.setCustomValidity('');
+        }
+      }
+
+      if (!isValid) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+
+      form.classList.add('was-validated');
+    });
+  });
+
+  // Validador de RUT chileno
+  function validarRUT(rut) {
+    rut = rut.replace(/\./g, '').replace(/-/g, '').toUpperCase();
+    if (!/^[0-9]+[0-9K]$/.test(rut)) return false;
+
+    const cuerpo = rut.slice(0, -1);
+    const dv = rut.slice(-1);
+
+    let suma = 0, multiplo = 2;
+    for (let i = cuerpo.length - 1; i >= 0; i--) {
+      suma += +cuerpo[i] * multiplo;
+      multiplo = multiplo === 7 ? 2 : multiplo + 1;
+    }
+
+    const dvEsperado = 11 - (suma % 11);
+    const dvFinal = dvEsperado === 11 ? '0' : dvEsperado === 10 ? 'K' : dvEsperado.toString();
+
+    return dv === dvFinal;
+  }
+});
